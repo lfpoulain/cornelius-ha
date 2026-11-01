@@ -1,0 +1,8 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# Serveur Cornelius. CORNELIUS_SUPERVISED=1 : un redémarrage demandé par l'administration
+# quitte simplement, et s6 relance le serveur.
+
+cd /app || bashio::exit.nok "Cornelius est absent de l'image."
+bashio::log.info "Démarrage du serveur Cornelius"
+exec node --import tsx server/index.ts

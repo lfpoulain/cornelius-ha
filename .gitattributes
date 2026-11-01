@@ -1,0 +1,3 @@
+# Les scripts s6 et le Dockerfile tournent sous Linux : fins de ligne LF, même sous Windows.
+* text=auto eol=lf
+*.png binary

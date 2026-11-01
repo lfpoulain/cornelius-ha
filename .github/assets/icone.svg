@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#38b4a0" stop-opacity="0.6" />
+      <stop offset="1" stop-color="#38b4a0" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="orbe" cx="0.42" cy="0.34" r="0.72">
+      <stop offset="0" stop-color="#e4fbf5" />
+      <stop offset="0.28" stop-color="#9fe6d8" />
+      <stop offset="0.62" stop-color="#3fb7a3" />
+      <stop offset="1" stop-color="#0f4f45" />
+    </radialGradient>
+    <linearGradient id="irise" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7cc4ff" />
+      <stop offset="0.35" stop-color="#b39dff" />
+      <stop offset="0.65" stop-color="#ff8f7a" />
+      <stop offset="1" stop-color="#9fe0c0" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="26" fill="#0b1312" />
+  <circle cx="64" cy="72" r="56" fill="url(#halo)" />
+  <path d="M22 54 L64 18 L106 54" fill="none" stroke="url(#irise)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="64" cy="76" r="32" fill="url(#orbe)" />
+  <circle cx="64" cy="76" r="32" fill="none" stroke="url(#irise)" stroke-width="1.5" opacity="0.8" />
+  <ellipse cx="57" cy="61" rx="15" ry="6.5" fill="#ffffff" opacity="0.3" />
+</svg>

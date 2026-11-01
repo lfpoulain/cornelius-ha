@@ -1,0 +1,35 @@
+configuration:
+  admin_password:
+    name: Mot de passe de l'administration
+    description: >-
+      8 caractères au moins, autre que « cornelius ». Il sert aussi à autoriser l'appareil du
+      miroir. Un mot de passe choisi ensuite dans l'administration le remplace : cette option
+      n'a alors plus d'effet.
+  openai_api_key:
+    name: Clé OpenAI
+    description: >-
+      Facultative : elle peut aussi se coller dans l'administration (Mise en route, Clés et
+      jetons), qui passe alors avant celle-ci.
+  small_machine:
+    name: Petite machine
+    description: >-
+      oui : sans vision locale, visages cherchés sur une image réduite. auto : oui sur
+      Raspberry Pi, Home Assistant Green et Yellow, ODROID et Khadas, non ailleurs.
+  http_port:
+    name: Port interne
+    description: >-
+      Port HTTP de Cornelius sur la boucle locale de la box, utilisé par la perception (1024 ou
+      plus). À changer seulement s'il est déjà pris par une autre application.
+  camera_index:
+    name: Numéro de la caméra USB
+    description: >-
+      Pour une caméra branchée sur la box (0 en général). Inutile avec la caméra du navigateur
+      qui affiche le miroir.
+  allowed_hosts:
+    name: Noms d'hôte acceptés
+    description: >-
+      Noms supplémentaires pour ouvrir Cornelius, séparés par des virgules (par exemple
+      miroir.maison). Les adresses IP locales et le nom de la box (homeassistant.local) sont
+      toujours acceptés.
+network:
+  3443/tcp: Miroir et administration (HTTPS, réseau local)

@@ -1,0 +1,8 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# Une perception arrêtée ne coupe pas le serveur : s6 la relance.
+
+readonly code="${1}"
+if [[ "${code}" -ne 0 ]] && [[ "${code}" -ne 256 ]]; then
+  bashio::log.warning "La perception s'est arrêtée (code ${code}) ; elle redémarre."
+fi

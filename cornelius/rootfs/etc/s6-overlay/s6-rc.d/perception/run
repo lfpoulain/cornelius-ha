@@ -1,0 +1,8 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# Perception locale (visages, parole, mot d'appel, vision). Elle se reconnecte seule au
+# serveur, qui peut démarrer après elle. Elle n'a besoin ni du mot de passe ni de la clé.
+
+cd /app || bashio::exit.nok "Cornelius est absent de l'image."
+bashio::log.info "Démarrage de la perception"
+exec env -u CORNELIUS_ADMIN_PASSWORD -u OPENAI_API_KEY /app/.venv/bin/python -u perception/worker.py
