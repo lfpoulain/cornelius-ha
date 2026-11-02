@@ -2,6 +2,16 @@
 
 Les versions les plus récentes en premier. Chaque version indique le commit de Cornelius qu'elle contient.
 
+## 0.2.0 · 2026-11-02
+
+### Changé
+
+- Cornelius [0.2.0](https://github.com/lfpoulain/Cornelius/releases/tag/v0.2.0), sa première version publiée (commit `7d24988`, tag `v0.2.0`), au lieu d'un commit de travail. Désormais, l'application suit les versions publiées de Cornelius.
+
+### Ajouté
+
+- Mémoire extraite par un serveur compatible OpenAI de la maison (Ollama…), réglable dans **Mise en route → Clés et jetons → Mémoire personnalisée** de l'administration de Cornelius.
+
 ## 0.1.1 · 2026-11-02
 
 ### Corrigé
