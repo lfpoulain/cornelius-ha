@@ -54,6 +54,10 @@ Les sauvegardes de Home Assistant contiennent la base (jeton Home Assistant, sig
 - Pas de panneau dans la barre latérale (Ingress) : l'administration s'ouvre dans son propre onglet, en HTTPS, ce que le micro du miroir exige.
 - Pas de génération d'images locale : choisissez OpenAI dans **Modules → Génération d'image**. Un modèle local installé depuis l'administration serait perdu à chaque redémarrage de l'application.
 
+## Mises à jour
+
+**Cornelius** suit les versions publiées de Cornelius : une nouvelle version apparaît dans **Paramètres → Mises à jour** le lendemain de sa publication au plus tard. **Cornelius (bêta)** suit la branche `beta`, avec les fonctions en cours. Le journal de démarrage indique la version contenue (« Démarrage du serveur Cornelius v0.2.0 »). Une mise à jour garde les données, le certificat et sa clé.
+
 ## Aide
 
 - Le **Journal** de l'application montre le serveur et la perception ; le journal détaillé est dans l'administration, rubrique **Journal**.

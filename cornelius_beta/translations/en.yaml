@@ -1,0 +1,32 @@
+configuration:
+  admin_password:
+    name: Admin password
+    description: >-
+      At least 8 characters, other than "cornelius". It also authorizes the mirror device. A
+      password chosen later in the admin page replaces it, and this option then has no effect.
+  openai_api_key:
+    name: OpenAI key
+    description: >-
+      Optional: it can also be pasted in the admin page, which then takes precedence.
+  small_machine:
+    name: Small machine
+    description: >-
+      oui: no local vision, faces searched on a smaller image. auto: oui on Raspberry Pi,
+      Home Assistant Green and Yellow, ODROID and Khadas, non elsewhere.
+  http_port:
+    name: Internal port
+    description: >-
+      Cornelius HTTP port on the box loopback, used by the perception (1024 or more). Change it
+      only if another app already uses it.
+  camera_index:
+    name: USB camera number
+    description: >-
+      For a camera plugged into the box (usually 0). Not needed with the camera of the device
+      showing the mirror.
+  allowed_hosts:
+    name: Allowed host names
+    description: >-
+      Extra names to open Cornelius, comma separated (for example mirror.home). Local IP
+      addresses and the box name (homeassistant.local) are always accepted.
+network:
+  3443/tcp: Mirror and admin page (HTTPS, local network)

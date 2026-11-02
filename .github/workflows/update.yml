@@ -1,0 +1,88 @@
+# Fait suivre à l'application une nouvelle version de Cornelius. Chaque jour, le canal stable
+# vérifie la dernière release ; à la main, on choisit le canal et, si on veut, un tag, une
+# branche ou un commit. Les images amd64 et aarch64 sont construites avant de publier sur main.
+name: Mise à jour de Cornelius
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Canal
+        type: choice
+        options: [stable, beta]
+        default: stable
+      ref:
+        description: "Tag (stable), branche ou commit (bêta). Vide : dernière release, ou tête de la branche beta."
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+# Les deux canaux publient sur main : un seul à la fois.
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+env:
+  CHANNEL: ${{ inputs.channel || 'stable' }}
+
+jobs:
+  bump:
+    runs-on: ubuntu-24.04
+    outputs:
+      changed: ${{ steps.bump.outputs.changed }}
+      version: ${{ steps.bump.outputs.version }}
+      dir: ${{ steps.dir.outputs.dir }}
+    steps:
+      - uses: actions/checkout@v5
+      - id: dir
+        run: echo "dir=$([[ "$CHANNEL" == stable ]] && echo cornelius || echo cornelius_beta)" >>"$GITHUB_OUTPUT"
+      - id: bump
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF: ${{ inputs.ref }}
+        run: scripts/bump.sh "$CHANNEL" "$REF"
+      - if: steps.bump.outputs.changed == 'true'
+        env:
+          VERSION: ${{ steps.bump.outputs.version }}
+          LABEL: ${{ steps.bump.outputs.label }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "update/$CHANNEL"
+          git commit -am "Cornelius $VERSION : $CHANNEL suit $LABEL"
+          git push --force origin "update/$CHANNEL"
+
+  build:
+    needs: bump
+    if: needs.bump.outputs.changed == 'true'
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: update/${{ inputs.channel || 'stable' }}
+      - name: Construire l'image ${{ matrix.arch }}
+        run: docker build --pull -t "cornelius-ha:${{ matrix.arch }}" "${{ needs.bump.outputs.dir }}"
+
+  publish:
+    needs: [bump, build]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - run: |
+          git fetch origin "update/$CHANNEL"
+          git merge --ff-only FETCH_HEAD
+          git push origin HEAD:main
+          git push origin --delete "update/$CHANNEL"

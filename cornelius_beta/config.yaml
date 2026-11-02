@@ -1,0 +1,38 @@
+name: Cornelius (bêta)
+version: "0.2.0-beta.ebea79d"
+slug: cornelius_beta
+description: Branche beta de Cornelius, pour essayer les fonctions en cours.
+url: https://github.com/lfpoulain/cornelius-ha
+arch:
+  - amd64
+  - aarch64
+stage: experimental
+startup: application
+boot: auto
+# Images de base Home Assistant : s6-overlay fait office d'init.
+init: false
+# Réseau de l'hôte : annonce mDNS pour les satellites, HTTPS sur le réseau local, et
+# Home Assistant joignable à http://127.0.0.1:8123. Voir DOCS.md, « Les droits demandés ».
+host_network: true
+# Caméra USB branchée sur la box (facultatif : la caméra du navigateur suffit).
+video: true
+# Ports différents de la version stable : les deux peuvent tourner ensemble.
+ports:
+  3443/tcp: 3444
+webui: "https://[HOST]:[PORT:3443]/admin"
+# Le chien de garde (à activer sur la page de l'application) interroge l'état du serveur.
+watchdog: "https://[HOST]:[PORT:3443]/api/health"
+# La base SQLite est copiée application arrêtée ; les modèles se retéléchargent.
+backup: cold
+backup_exclude:
+  - models
+options:
+  small_machine: auto
+  http_port: 3001
+schema:
+  admin_password: password(8,)
+  openai_api_key: password?
+  small_machine: list(auto|oui|non)
+  http_port: int(1024,65535)
+  camera_index: int(0,)?
+  allowed_hosts: str?

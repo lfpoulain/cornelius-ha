@@ -1,0 +1,89 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# Prépare /data et l'environnement du serveur et de la perception, à chaque démarrage.
+# Les variables passent par l'environnement s6 (lisible par root seul) : aucun fichier .env,
+# aucun échappement.
+
+set -e
+umask 077
+
+env_dir=/run/s6/container_environment
+put() { printf '%s' "$2" > "${env_dir}/$1"; }
+
+# --- Administration ---------------------------------------------------------------------
+admin_password="$(bashio::config 'admin_password')"
+if [[ "${admin_password}" == "cornelius" ]]; then
+  bashio::exit.nok "Choisissez un mot de passe autre que « cornelius » : celui-là est refusé depuis les autres appareils, et le miroir s'ouvre forcément sur un autre appareil."
+fi
+put CORNELIUS_ADMIN_PASSWORD "${admin_password}"
+if bashio::config.has_value 'openai_api_key'; then
+  put OPENAI_API_KEY "$(bashio::config 'openai_api_key')"
+fi
+
+# --- Ports ----------------------------------------------------------------------------
+http_port="$(bashio::config 'http_port')"
+https_port="$(bashio::app.port 3443)"
+bashio::var.has_value "${https_port}" || https_port=3443
+if (( https_port < 1024 )) || [[ "${https_port}" == "${http_port}" ]]; then
+  bashio::exit.nok "Port HTTPS ${https_port} refusé : choisissez 1024 ou plus, différent du port interne (${http_port})."
+fi
+put PORT "${http_port}"
+put CORNELIUS_HTTPS_PORT "${https_port}"
+
+# --- Noms acceptés ----------------------------------------------------------------------
+# Dans le conteneur, le nom de la machine est celui de l'application : le nom de la box
+# (homeassistant, homeassistant.local) vient du Supervisor.
+hosts=""
+box="$(bashio::info.hostname || true)"
+if [[ "${box}" == "null" ]]; then
+  box=""
+fi
+if [[ -n "${box}" ]]; then
+  hosts="${box},${box}.local"
+fi
+if bashio::config.has_value 'allowed_hosts'; then
+  hosts="${hosts:+${hosts},}$(bashio::config 'allowed_hosts')"
+fi
+if [[ -n "${hosts}" ]]; then
+  put CORNELIUS_ALLOWED_HOSTS "${hosts}"
+fi
+
+# --- Machine et caméra ------------------------------------------------------------------
+# Dans un conteneur, Cornelius ne peut pas lire le modèle de la carte : le type de machine
+# de Home Assistant le remplace pour « auto ».
+case "$(bashio::config 'small_machine')" in
+  oui) put CORNELIUS_SMALL_MACHINE 1 ;;
+  non) put CORNELIUS_SMALL_MACHINE 0 ;;
+  *)
+    case "$(bashio::info.machine || true)" in
+      raspberrypi* | yellow | green | odroid-* | khadas-*) put CORNELIUS_SMALL_MACHINE 1 ;;
+      *) put CORNELIUS_SMALL_MACHINE 0 ;;
+    esac
+    ;;
+esac
+if bashio::config.has_value 'camera_index'; then
+  put CORNELIUS_CAMERA_INDEX "$(bashio::config 'camera_index')"
+fi
+
+# Fuseau horaire de Home Assistant, transmis par le Supervisor.
+put CORNELIUS_TIMEZONE "${TZ:-Europe/Paris}"
+
+# --- Jeton de la perception -------------------------------------------------------------
+# Tiré une fois puis gardé ; un fichier vide ou tronqué est remplacé.
+token_file=/data/perception-token
+token="$(cat "${token_file}" 2>/dev/null || true)"
+if (( ${#token} < 32 )); then
+  token="$(head -c 32 /dev/urandom | base64 | tr '+/' '-_' | tr -d '=\n')"
+  printf '%s' "${token}" > "${token_file}.tmp"
+  mv "${token_file}.tmp" "${token_file}"
+fi
+put CORNELIUS_PERCEPTION_TOKEN "${token}"
+
+# --- Modèles ----------------------------------------------------------------------------
+# Ceux de l'image (visages, parole, mot d'appel) rejoignent ceux téléchargés depuis
+# l'administration, qui restent.
+umask 022
+mkdir -p /data/models
+cp -a /opt/cornelius-models/. /data/models/
+
+bashio::log.info "Miroir : https://${box:-<adresse de la box>}${box:+.local}:${https_port}/ · administration : /admin"

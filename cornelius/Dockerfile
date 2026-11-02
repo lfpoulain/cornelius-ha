@@ -16,17 +16,18 @@ FROM ghcr.io/astral-sh/uv:0.13.6@sha256:af22a52f5eafef3d78e551599d405c02df61919d
 
 FROM ${BASE_IMAGE}
 
-# Commits exacts de Cornelius et de ses modules externes. Les changer change aussi la
-# version de l'application (config.yaml) et son CHANGELOG.
-ARG CORNELIUS_COMMIT=7d24988c17bd37311a6f267f0974a6a1897c675d
-ARG CORNELIUS_MODULES_COMMIT=365ab49596cbd85ee11c7a03dd2a9eb74af92db6
 ARG PYTHON_VERSION=3.12.16
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 
+# Commits exacts de Cornelius et de ses modules externes, propres à chaque canal (stable ou
+# bêta) : scripts/bump.sh les change avec la version de l'application et son CHANGELOG.
+COPY source.env /etc/cornelius-source.env
+
 # Sources à un commit précis, vérifié ; git ne reste pas dans l'image.
-RUN apt-get update \
+RUN . /etc/cornelius-source.env \
+  && apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates git \
   && fetch() { \
        git init -q "$3" \

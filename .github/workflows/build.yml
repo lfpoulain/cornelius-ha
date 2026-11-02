@@ -1,0 +1,42 @@
+# Vérifie chaque modification de l'application : bêta recopiée depuis la version stable,
+# scripts, puis construction des deux images sur amd64 et aarch64.
+name: Construction
+
+on:
+  push:
+    branches: [main]
+    paths: ["cornelius/**", "cornelius_beta/**", "scripts/**", ".github/workflows/build.yml"]
+  pull_request:
+    paths: ["cornelius/**", "cornelius_beta/**", "scripts/**", ".github/workflows/build.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Bêta à jour
+        run: scripts/sync-beta.sh --check
+      - name: Scripts
+        run: shellcheck scripts/*.sh
+
+  build:
+    needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: [cornelius, cornelius_beta]
+        arch: [amd64, aarch64]
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Construire ${{ matrix.addon }} (${{ matrix.arch }})
+        run: docker build --pull -t "${{ matrix.addon }}:${{ matrix.arch }}" "${{ matrix.addon }}"

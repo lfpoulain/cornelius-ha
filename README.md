@@ -85,10 +85,21 @@
 1. Ajoutez le dépôt avec le bouton ci-dessus. Sans lui : **Paramètres → Applications**, ouvrez la boutique (bouton d’installation d’une application), menu **⋮ → Dépôts**, et collez `https://github.com/lfpoulain/cornelius-ha`.
 2. Ouvrez **Cornelius** dans la boutique et installez-le : la box construit l’image, comptez plusieurs minutes (davantage sur un Raspberry Pi).
 
-Les nouvelles versions arrivent ensuite dans **Paramètres → Mises à jour**.
+### Stable ou bêta
+
+Le dépôt propose deux applications :
+
+| Application | Suit | Pour qui |
+|---|---|---|
+| **Cornelius** | la dernière [version publiée](https://github.com/lfpoulain/Cornelius/releases) de Cornelius | le miroir de tous les jours |
+| **Cornelius (bêta)** | la branche [`beta`](https://github.com/lfpoulain/Cornelius/tree/beta) : fonctions en cours, parfois cassées | essayer avant la publication |
+
+Les deux peuvent tourner ensemble : la bêta a ses propres données et ses propres ports (`3444` en HTTPS, `3001` en interne). La base de l’une ne passe pas dans l’autre. Avec les deux en marche, les satellites audio se connectent au premier qui répond : donnez-leur une adresse fixe.
+
+Les nouvelles versions arrivent dans **Paramètres → Mises à jour**. Le dépôt vérifie chaque jour si Cornelius a publié une version ; la bêta avance quand une nouvelle étape de la branche `beta` est prête à essayer. Activez **Mise à jour automatique** sur la page de l’application pour les installer sans y penser.
 
 > [!NOTE]
-> L’application est au stade **expérimental** : elle tourne sur un PC x86-64 sous Home Assistant OS, mais l’image aarch64 (Raspberry Pi, Green, Yellow) n’a pas encore été essayée. Une application installée comme application locale (`local_apps`) est distincte de celle de la boutique : passer de l’une à l’autre repart d’un Cornelius vide.
+> L’application est au stade **expérimental** : elle tourne sur un PC x86-64 sous Home Assistant OS ; l’image aarch64 (Raspberry Pi, Green, Yellow) est construite à chaque version, mais pas encore essayée sur une vraie box. Une application installée comme application locale (`local_apps`) est distincte de celle de la boutique : passer de l’une à l’autre repart d’un Cornelius vide.
 
 ## 👋 Premiers pas
 
@@ -119,10 +130,14 @@ Le guide complet est dans l’onglet **Documentation** de l’application ([DOCS
 |---|---|
 | [`repository.yaml`](repository.yaml) | Description du dépôt, lue par Home Assistant. |
 | [`cornelius/config.yaml`](cornelius/config.yaml) | L’application : architectures, réseau, chien de garde, sauvegarde, options. |
-| [`cornelius/Dockerfile`](cornelius/Dockerfile) | L’image : base Debian de Home Assistant, Node 24 de l’image officielle, Python 3.12 par uv, Cornelius et cornelius-modules à un commit précis, modèles des visages, de la parole et du mot d’appel. |
+| [`cornelius/source.env`](cornelius/source.env) | Les commits de Cornelius et de cornelius-modules contenus dans l’image, tenus par `scripts/bump.sh`. |
+| [`cornelius/Dockerfile`](cornelius/Dockerfile) | L’image : base Debian de Home Assistant, Node 24 de l’image officielle, Python 3.12 par uv, Cornelius et cornelius-modules aux commits de `source.env`, modèles des visages, de la parole et du mot d’appel. |
 | [`cornelius/rootfs/etc/s6-overlay/`](cornelius/rootfs/etc/s6-overlay) | Les services s6 : `init-cornelius` (options, ports, nom de la box, jeton de la perception, modèles), `cornelius` (serveur) et `perception`. |
 | [`cornelius/DOCS.md`](cornelius/DOCS.md) | L’onglet **Documentation** de l’application. |
 | [`cornelius/translations/`](cornelius/translations) | Les libellés des options, en français et en anglais. |
+| [`cornelius_beta/`](cornelius_beta) | La bêta. Seuls `config.yaml` (nom, version, ports), `source.env`, `README.md` et `CHANGELOG.md` lui sont propres ; le reste est recopié de `cornelius/` par `scripts/sync-beta.sh`. |
+| [`scripts/`](scripts) | `bump.sh` fait suivre une version de Cornelius à un canal ; `sync-beta.sh` recopie la bêta. |
+| [`.github/workflows/`](.github/workflows) | `update.yml` suit les versions de Cornelius ; `build.yml` vérifie chaque modification. |
 | [`.github/assets/`](.github/assets) | La bannière, l’icône et le logo, en SVG. |
 
 ```mermaid
@@ -141,7 +156,18 @@ flowchart LR
 
 ## 🛠️ Développer
 
-**Mettre à jour Cornelius.** Changez `CORNELIUS_COMMIT` (ou `CORNELIUS_MODULES_COMMIT`) dans le [`Dockerfile`](cornelius/Dockerfile) avec le SHA complet du commit voulu, montez `version` dans [`config.yaml`](cornelius/config.yaml) et ajoutez une entrée au [`CHANGELOG.md`](cornelius/CHANGELOG.md). C’est la nouvelle version qui propose la mise à jour dans Home Assistant.
+**Suivre une version de Cornelius.** L’action [Mise à jour de Cornelius](.github/workflows/update.yml) s’en charge : chaque jour pour le canal stable, et à la main (**Actions → Mise à jour de Cornelius → Run workflow**) pour l’un ou l’autre canal, avec un tag, une branche ou un commit au choix. Elle lance `scripts/bump.sh`, construit les images amd64 et aarch64, puis publie sur `main`. La même chose en local, avec [gh](https://cli.github.com/) connecté :
+
+```sh
+scripts/bump.sh stable          # dernière release de Cornelius
+scripts/bump.sh stable v0.2.0   # ou ce tag
+scripts/bump.sh beta            # tête de la branche beta
+scripts/bump.sh beta a15463f    # ou ce commit
+```
+
+Le script change `source.env`, `version` dans `config.yaml` et ajoute une entrée au `CHANGELOG.md` : c’est la nouvelle version qui propose la mise à jour dans Home Assistant. Le canal stable porte la version de Cornelius (`0.2.0`) ; pour une correction de l’application seule, ajoutez un suffixe à la main (`0.2.0-1`). La bêta porte la version de la branche et son commit (`0.2.0-beta.ebea79d`).
+
+**Modifier l’application.** Changez les fichiers de `cornelius/`, puis lancez `scripts/sync-beta.sh` pour recopier la bêta ; l’action [Construction](.github/workflows/build.yml) refuse une bêta oubliée.
 
 **Mettre à jour les briques.** Node, uv et l’image de base sont épinglés par version et empreinte (`@sha256:`). Pour en changer, relevez la nouvelle empreinte :
 

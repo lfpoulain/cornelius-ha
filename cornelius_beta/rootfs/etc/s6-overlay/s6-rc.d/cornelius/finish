@@ -1,0 +1,12 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# 0 : redémarrage demandé par l'administration, s6 relance le serveur.
+# 256 : arrêt de l'application. Toute autre fin arrête l'application ; le chien de garde,
+# s'il est activé sur sa page, la relance.
+
+readonly code="${1}"
+if [[ "${code}" -ne 0 ]] && [[ "${code}" -ne 256 ]]; then
+  bashio::log.error "Le serveur Cornelius s'est arrêté (code ${code})."
+  echo "${code}" > /run/s6-linux-init-container-results/exitcode
+  exec /run/s6/basedir/bin/halt
+fi

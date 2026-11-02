@@ -4,5 +4,7 @@
 # quitte simplement, et s6 relance le serveur.
 
 cd /app || bashio::exit.nok "Cornelius est absent de l'image."
-bashio::log.info "Démarrage du serveur Cornelius"
+# shellcheck source=/dev/null
+. /etc/cornelius-source.env
+bashio::log.info "Démarrage du serveur Cornelius ${CORNELIUS_REF} (${CORNELIUS_COMMIT:0:7})"
 exec node --import tsx server/index.ts
