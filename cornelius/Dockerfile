@@ -18,7 +18,7 @@ FROM ${BASE_IMAGE}
 
 # Commits exacts de Cornelius et de ses modules externes. Les changer change aussi la
 # version de l'application (config.yaml) et son CHANGELOG.
-ARG CORNELIUS_COMMIT=26d03a36ecd144d4652d338fca3ebe512b39bed1
+ARG CORNELIUS_COMMIT=7fd03bb1f8abc40802e35950507262d63b16fa36
 ARG CORNELIUS_MODULES_COMMIT=365ab49596cbd85ee11c7a03dd2a9eb74af92db6
 ARG PYTHON_VERSION=3.12.16
 

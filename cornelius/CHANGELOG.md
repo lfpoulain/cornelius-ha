@@ -2,6 +2,12 @@
 
 Les versions les plus récentes en premier. Chaque version indique le commit de Cornelius qu'elle contient.
 
+## 0.1.1 · 2026-11-02
+
+### Corrigé
+
+- Les satellites trouvent la box seuls : l'annonce mDNS répondait aux recherches sous Windows seulement (Cornelius au commit `7fd03bb`, branche `home-assistant`).
+
 ## 0.1.0 · 2026-11-01
 
 ### Ajouté
