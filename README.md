@@ -80,13 +80,15 @@
 
 ## 🚀 Installer
 
-> [!NOTE]
-> Ce dépôt est **privé** : Home Assistant ne sait pas ajouter un dépôt privé à sa boutique. Installez l’application comme application locale. Le bouton « Ajouter le dépôt » arrivera quand le dépôt sera public.
+[![Ajouter le dépôt à Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Flfpoulain%2Fcornelius-ha)
 
-1. Installez l’application **Samba share** (ou **Terminal & SSH**) dans Home Assistant.
-2. Copiez le dossier [`cornelius/`](cornelius) de ce dépôt dans le partage **`local_apps`** de la box (`\\homeassistant.local\local_apps\cornelius`).
-3. Dans **Paramètres → Applications**, ouvrez la boutique (bouton d’installation d’une application), puis menu **⋮ → Rechercher des mises à jour**. **Cornelius** apparaît dans la section « Local apps ».
-4. Installez-le : la box construit l’image, comptez plusieurs minutes (davantage sur un Raspberry Pi).
+1. Ajoutez le dépôt avec le bouton ci-dessus. Sans lui : **Paramètres → Applications**, ouvrez la boutique (bouton d’installation d’une application), menu **⋮ → Dépôts**, et collez `https://github.com/lfpoulain/cornelius-ha`.
+2. Ouvrez **Cornelius** dans la boutique et installez-le : la box construit l’image, comptez plusieurs minutes (davantage sur un Raspberry Pi).
+
+Les nouvelles versions arrivent ensuite dans **Paramètres → Mises à jour**.
+
+> [!NOTE]
+> L’application est au stade **expérimental** : elle tourne sur un PC x86-64 sous Home Assistant OS, mais l’image aarch64 (Raspberry Pi, Green, Yellow) n’a pas encore été essayée. Une application installée comme application locale (`local_apps`) est distincte de celle de la boutique : passer de l’une à l’autre repart d’un Cornelius vide.
 
 ## 👋 Premiers pas
 
@@ -97,7 +99,7 @@
 5. Dans l’administration, **Caméra et reconnaissance → Emplacement de la caméra → Sur l’appareil qui affiche le miroir**, sauf si une caméra USB est branchée sur la box.
 6. **Modules → Home Assistant** : adresse `http://127.0.0.1:8123` et un jeton longue durée, de préférence d’un compte réservé à Cornelius.
 
-Le guide complet est dans l’onglet **Documentation** de l’application ([DOCS.md](cornelius/DOCS.md)) et dans la documentation de Cornelius : [Installer dans Home Assistant](https://github.com/lfpoulain/Cornelius/blob/home-assistant/docs/installation/home-assistant.md).
+Le guide complet est dans l’onglet **Documentation** de l’application ([DOCS.md](cornelius/DOCS.md)) et dans la documentation de Cornelius : [Installer dans Home Assistant](https://github.com/lfpoulain/Cornelius/blob/main/docs/installation/home-assistant.md).
 
 ## 🔒 Sécurité
 
@@ -155,7 +157,7 @@ docker buildx build --platform linux/amd64 --load -t local/cornelius-ha .
 
 Hors de Home Assistant, `bashio::config` n’a pas de Supervisor à interroger : pour lancer l’image, remplacez `init-cornelius/run` par un script qui écrit lui-même les variables.
 
-**Essayer sur la box.** Copiez `cornelius/` dans `local_apps`. Après une modification du `Dockerfile` ou des scripts, **Reconstruire** sur la page de l’application (ou `ha apps rebuild --force local_cornelius` en SSH). Après une modification de `config.yaml`, d’abord **⋮ → Rechercher des mises à jour** dans la boutique, puis **Mettre à jour** si la version a changé, sinon **Reconstruire**.
+**Essayer sur la box.** Copiez `cornelius/` dans le partage **`local_apps`** de la box (application **Samba share**) : après **⋮ → Rechercher des mises à jour**, il apparaît dans la boutique, section « Local apps ». C’est une application distincte de celle du dépôt, avec ses propres données. Après une modification du `Dockerfile` ou des scripts, **Reconstruire** sur la page de l’application (ou `ha apps rebuild --force local_cornelius` en SSH). Après une modification de `config.yaml`, d’abord **⋮ → Rechercher des mises à jour** dans la boutique, puis **Mettre à jour** si la version a changé, sinon **Reconstruire**.
 
 ## 📄 Licence
 

@@ -2,7 +2,7 @@
 
 Cornelius est le miroir intelligent de la famille : il reconnaît qui se présente, écoute « Cornelius » et répond à la voix, en français. Cette application fait tourner son serveur et sa perception sur la box Home Assistant. Le miroir s'affiche sur un autre appareil : un Raspberry Pi en kiosque, une tablette ou un ordinateur.
 
-Le guide complet est dans la documentation de Cornelius : [Installer dans Home Assistant](https://github.com/lfpoulain/Cornelius/blob/home-assistant/docs/installation/home-assistant.md).
+Le guide complet est dans la documentation de Cornelius : [Installer dans Home Assistant](https://github.com/lfpoulain/Cornelius/blob/main/docs/installation/home-assistant.md).
 
 ## Démarrer
 
@@ -20,6 +20,10 @@ Le guide complet est dans la documentation de Cornelius : [Installer dans Home A
 ## Relier Home Assistant
 
 Dans **Modules → Home Assistant**, l'adresse est `http://127.0.0.1:8123`, avec un jeton longue durée créé de préférence par un compte réservé à Cornelius, sans droits d'administrateur. Si Home Assistant sert lui-même du HTTPS (`ssl_certificate` dans sa configuration), utilisez son adresse `https://` avec le nom de son certificat.
+
+## Les satellites
+
+Les satellites audio trouvent la box seuls par mDNS, sans réglage. Un satellite se connecte au premier Cornelius qui répond : si un autre ordinateur fait aussi tourner Cornelius sur le réseau, arrêtez-le, ou donnez au satellite l'adresse de la box dans sa page de configuration, rubrique **Adresse fixe de Cornelius** (par exemple `wss://192.168.1.10:3443/satellite`).
 
 ## Options
 
