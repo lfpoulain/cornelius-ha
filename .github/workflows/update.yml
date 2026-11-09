@@ -1,11 +1,12 @@
 # Fait suivre à l'application une nouvelle version de Cornelius. Chaque jour, le canal stable
-# vérifie la dernière release ; à la main, on choisit le canal et, si on veut, un tag, une
+# vérifie la dernière release et le canal bêta suit la branche beta ; à la main, on choisit le canal et, si on veut, un tag, une
 # branche ou un commit. Les images amd64 et aarch64 sont construites avant de publier sur main.
 name: Mise à jour de Cornelius
 
 on:
   schedule:
-    - cron: "17 5 * * *"
+    - cron: "17 5 * * *"   # stable
+    - cron: "17 6 * * *"   # bêta, une heure après : les deux publient sur main, un seul à la fois
   workflow_dispatch:
     inputs:
       channel:
@@ -27,7 +28,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  CHANNEL: ${{ inputs.channel || 'stable' }}
+  CHANNEL: ${{ inputs.channel || (github.event.schedule == '17 6 * * *' && 'beta') || 'stable' }}
 
 jobs:
   bump:
@@ -70,7 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: update/${{ inputs.channel || 'stable' }}
+          ref: update/${{ env.CHANNEL }}
       - name: Construire l'image ${{ matrix.arch }}
         run: docker build --pull -t "cornelius-ha:${{ matrix.arch }}" "${{ needs.bump.outputs.dir }}"
 

@@ -96,7 +96,7 @@ Le dépôt propose deux applications :
 
 Les deux peuvent tourner ensemble : la bêta a ses propres données et ses propres ports (`3444` en HTTPS, `3001` en interne). La base de l’une ne passe pas dans l’autre. Avec les deux en marche, les satellites audio se connectent au premier qui répond : donnez-leur une adresse fixe.
 
-Les nouvelles versions arrivent dans **Paramètres → Mises à jour**. Le dépôt vérifie chaque jour si Cornelius a publié une version ; la bêta avance quand une nouvelle étape de la branche `beta` est prête à essayer. Activez **Mise à jour automatique** sur la page de l’application pour les installer sans y penser.
+Les nouvelles versions arrivent dans **Paramètres → Mises à jour**. Le dépôt vérifie chaque jour si Cornelius a publié une version ; la bêta suit chaque jour la branche `beta`. Activez **Mise à jour automatique** sur la page de l’application pour les installer sans y penser.
 
 > [!NOTE]
 > L’application est au stade **expérimental** : elle tourne sur un PC x86-64 sous Home Assistant OS ; l’image aarch64 (Raspberry Pi, Green, Yellow) est construite à chaque version, mais pas encore essayée sur une vraie box. Une application installée comme application locale (`local_apps`) est distincte de celle de la boutique : passer de l’une à l’autre repart d’un Cornelius vide.
@@ -156,7 +156,7 @@ flowchart LR
 
 ## 🛠️ Développer
 
-**Suivre une version de Cornelius.** L’action [Mise à jour de Cornelius](.github/workflows/update.yml) s’en charge : chaque jour pour le canal stable, et à la main (**Actions → Mise à jour de Cornelius → Run workflow**) pour l’un ou l’autre canal, avec un tag, une branche ou un commit au choix. Elle lance `scripts/bump.sh`, construit les images amd64 et aarch64, puis publie sur `main`. La même chose en local, avec [gh](https://cli.github.com/) connecté :
+**Suivre une version de Cornelius.** L’action [Mise à jour de Cornelius](.github/workflows/update.yml) s’en charge : chaque jour pour le canal stable (dernière release) et pour la bêta (tête de la branche `beta`), et à la main (**Actions → Mise à jour de Cornelius → Run workflow**) pour l’un ou l’autre canal, avec un tag, une branche ou un commit au choix. Elle lance `scripts/bump.sh`, construit les images amd64 et aarch64, puis publie sur `main`. La même chose en local, avec [gh](https://cli.github.com/) connecté :
 
 ```sh
 scripts/bump.sh stable          # dernière release de Cornelius
