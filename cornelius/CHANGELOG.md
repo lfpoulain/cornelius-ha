@@ -2,6 +2,13 @@
 
 Les versions les plus récentes en premier. Chaque version indique le commit de Cornelius qu'elle contient.
 
+## 0.3.0 · 2026-11-09
+
+### Changé
+
+- Cornelius [0.3.0](https://github.com/lfpoulain/Cornelius/releases/tag/v0.3.0) (commit `148a1eb`) : les nouveautés sont dans ses notes de version.
+- cornelius-modules au commit [`e6e9e4e`](https://github.com/lfpoulain/cornelius-modules/commit/e6e9e4ea5f5e08aad1e08d852d593399e01295d5).
+
 ## 0.2.0 · 2026-11-02
 
 ### Changé
