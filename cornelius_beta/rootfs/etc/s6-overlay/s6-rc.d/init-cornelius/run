@@ -79,6 +79,21 @@ if (( ${#token} < 32 )); then
 fi
 put CORNELIUS_PERCEPTION_TOKEN "${token}"
 
+# --- Modules externes -------------------------------------------------------------------
+# Cornelius les installe lui-même dans /data/modules (rubrique « Installer des modules »).
+# Au premier démarrage, la copie de l'image sert de départ et les modules déjà utilisés
+# (au moins une source) restent installés. Un Cornelius d'avant le catalogue charge encore
+# toute la copie de l'image comme dossier local.
+# shellcheck source=/dev/null
+. /etc/cornelius-source.env
+if [[ -f /app/server/module-store/store.ts ]]; then
+  node --no-warnings /usr/local/lib/cornelius/seed-modules.mjs \
+    /opt/cornelius-modules "${CORNELIUS_MODULES_COMMIT}" /data/modules /data/cornelius.sqlite \
+    || bashio::log.warning "Reprise des modules impossible : installez-les depuis l'administration."
+else
+  put CORNELIUS_MODULES_DIR /opt/cornelius-modules
+fi
+
 # --- Modèles ----------------------------------------------------------------------------
 # Ceux de l'image (visages, parole, mot d'appel) rejoignent ceux téléchargés depuis
 # l'administration, qui restent.

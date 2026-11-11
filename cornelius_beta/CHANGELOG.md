@@ -2,6 +2,13 @@
 
 Les versions les plus récentes en premier. Chaque version indique le commit de la branche `beta` de Cornelius qu'elle contient.
 
+## 0.3.0-beta.14791e3 · 2026-11-11
+
+### Changé
+
+- Cornelius au commit [`14791e3`](https://github.com/lfpoulain/Cornelius/commit/14791e3f5e226eb98c8a4410b20d2bd08b1d7237) (`beta`) : [changements depuis la bêta précédente](https://github.com/lfpoulain/Cornelius/compare/037501c85e8d800c46d63508f18027f478038cb0...14791e3f5e226eb98c8a4410b20d2bd08b1d7237), avec le catalogue de modules.
+- Les modules externes s'installent, se mettent à jour et se désinstallent dans **Installer des modules** de l'administration, et sont gardés dans `/data/modules`. L'image ne les charge plus tous d'office : sa copie de cornelius-modules ne sert plus qu'au premier démarrage, où les modules qui ont déjà au moins une source restent installés, sans téléchargement.
+
 ## 0.3.0-beta.037501c · 2026-11-11
 
 ### Changé

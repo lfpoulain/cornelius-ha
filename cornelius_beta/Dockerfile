@@ -25,7 +25,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 # bêta) : scripts/bump.sh les change avec la version de l'application et son CHANGELOG.
 COPY source.env /etc/cornelius-source.env
 
-# Sources à un commit précis, vérifié ; git ne reste pas dans l'image.
+# Sources à un commit précis, vérifié ; git ne reste pas dans l'image. Les modules externes
+# ne sont pas chargés depuis l'image : Cornelius les installe dans /data/modules, et cette
+# copie ne sert qu'au premier démarrage (voir init-cornelius).
 RUN . /etc/cornelius-source.env \
   && apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates git \
@@ -81,8 +83,7 @@ RUN mv models /opt/cornelius-models \
 # Assistant et les autres applications ; aucune ne doit compter comme l'ordinateur du miroir.
 ENV CORNELIUS_SUPERVISED=1 \
     CORNELIUS_TRUST_LOOPBACK=0 \
-    CORNELIUS_DATABASE=/data/cornelius.sqlite \
-    CORNELIUS_MODULES_DIR=/opt/cornelius-modules
+    CORNELIUS_DATABASE=/data/cornelius.sqlite
 
 COPY rootfs /
 # Les fichiers copiés depuis Windows ou par Samba perdent le bit d'exécution.
