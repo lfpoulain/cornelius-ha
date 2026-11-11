@@ -2,6 +2,12 @@
 
 Les versions les plus récentes en premier. Chaque version indique le commit de la branche `beta` de Cornelius qu'elle contient.
 
+## 0.3.0-beta.037501c · 2026-11-11
+
+### Changé
+
+- Cornelius au commit [`037501c`](https://github.com/lfpoulain/Cornelius/commit/037501c85e8d800c46d63508f18027f478038cb0) (`beta`) : [changements depuis la bêta précédente](https://github.com/lfpoulain/Cornelius/compare/90bf79e4c60ffd4e95ead5c32707a023556610d2...037501c85e8d800c46d63508f18027f478038cb0).
+
 ## 0.3.0-beta.90bf79e · 2026-11-10
 
 ### Changé
